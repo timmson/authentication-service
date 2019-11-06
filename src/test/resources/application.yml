@@ -1,0 +1,10 @@
+auth:
+  otp:
+    aliveSeconds: 60
+  token:
+    aliveDays: 14
+twilio:
+  from: "ru.timmson"
+  auth:
+    sid: "test"
+    token: "test"
