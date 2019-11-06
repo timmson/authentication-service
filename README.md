@@ -1,3 +1,3 @@
-# Speed up MSA
+# Authentication Service
 
 Kata for training
