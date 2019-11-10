@@ -1,9 +1,7 @@
 package ru.timmson.auth.domain;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.Data;
 
-@Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class SetPinCodeResponse implements AuthServiceResponse {
 
@@ -11,4 +9,19 @@ public class SetPinCodeResponse implements AuthServiceResponse {
 
     private String confirmationToken;
 
+    public String getErrorMessage() {
+        return errorMessage;
+    }
+
+    public void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
+    }
+
+    public String getConfirmationToken() {
+        return confirmationToken;
+    }
+
+    public void setConfirmationToken(String confirmationToken) {
+        this.confirmationToken = confirmationToken;
+    }
 }

@@ -1,10 +1,8 @@
 package ru.timmson.auth.domain;
 
-import lombok.Data;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-@Data
 public class AuthResponse<T extends AuthServiceResponse> {
 
     private Integer code;
@@ -12,6 +10,22 @@ public class AuthResponse<T extends AuthServiceResponse> {
     private T body;
 
     public AuthResponse(T body) {
+        this.body = body;
+    }
+
+    public Integer getCode() {
+        return code;
+    }
+
+    public void setCode(Integer code) {
+        this.code = code;
+    }
+
+    public T getBody() {
+        return body;
+    }
+
+    public void setBody(T body) {
         this.body = body;
     }
 

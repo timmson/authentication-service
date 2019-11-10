@@ -6,15 +6,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import ru.timmson.auth.domain.CheckPhoneNumberRequest;
-import ru.timmson.auth.domain.SetPinCodeRequest;
-import ru.timmson.auth.domain.VerifyPinCodeRequest;
-import ru.timmson.auth.domain.VerifySmsCodeRequest;
+import ru.timmson.auth.domain.*;
 import ru.timmson.dao.TokenRepository;
 import ru.timmson.domain.Token;
 import ru.timmson.domain.TokenStatus;
 
-import java.util.List;
+import java.util.Collections;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -49,11 +46,11 @@ class AuthServiceShould {
 
     @Test
     void return200_whenUserIsNotExist() {
-        final var request = new CheckPhoneNumberRequest();
+        CheckPhoneNumberRequest request = new CheckPhoneNumberRequest();
         request.setPhoneNumber(phoneNumber);
-        when(tokenRepository.findByPhoneNumber(eq(phoneNumber))).thenReturn(List.of());
+        when(tokenRepository.findByPhoneNumber(eq(phoneNumber))).thenReturn(Collections.emptyList());
 
-        final var result = service.checkPhoneNumber(request);
+        AuthResponse<CheckPhoneNumberResponse> result = service.checkPhoneNumber(request);
 
         Assertions.assertEquals(200, result.getCode());
         Assertions.assertFalse(result.getBody().getAvailable());
@@ -61,14 +58,14 @@ class AuthServiceShould {
 
     @Test
     void return200_whenUserIsExist() {
-        final var request = new CheckPhoneNumberRequest();
+        CheckPhoneNumberRequest request = new CheckPhoneNumberRequest();
         request.setPhoneNumber(phoneNumber);
 
-        final var token = new Token();
+        Token token = new Token();
         token.setStatus(TokenStatus.ACTIVE);
-        when(tokenRepository.findByPhoneNumber(eq(phoneNumber))).thenReturn(List.of(token));
+        when(tokenRepository.findByPhoneNumber(eq(phoneNumber))).thenReturn(Collections.singletonList(token));
 
-        final var result = service.checkPhoneNumber(request);
+        AuthResponse<CheckPhoneNumberResponse> result = service.checkPhoneNumber(request);
 
         Assertions.assertEquals(200, result.getCode());
         Assertions.assertTrue(result.getBody().getAvailable());
@@ -77,14 +74,14 @@ class AuthServiceShould {
 
     @Test
     void return403_whenUserIsExist() {
-        final var request = new CheckPhoneNumberRequest();
+        CheckPhoneNumberRequest request = new CheckPhoneNumberRequest();
         request.setPhoneNumber(phoneNumber);
 
-        final var token = new Token();
+        Token token = new Token();
         token.setStatus(TokenStatus.BLOCKED);
-        when(tokenRepository.findByPhoneNumber(eq(phoneNumber))).thenReturn(List.of(token));
+        when(tokenRepository.findByPhoneNumber(eq(phoneNumber))).thenReturn(Collections.singletonList(token));
 
-        final var result = service.checkPhoneNumber(request);
+        AuthResponse<CheckPhoneNumberResponse> result = service.checkPhoneNumber(request);
 
         Assertions.assertEquals(403, result.getCode());
         assertNull(result.getBody().getAvailable());
@@ -93,11 +90,11 @@ class AuthServiceShould {
 
     @Test
     void return200AndConfirmationToken_whenPinCodeSavedAndSmsSent() {
-        var request = buildSetPinCodeRequest();
+        SetPinCodeRequest request = buildSetPinCodeRequest();
         when(generatorService.generateToken()).thenReturn(confirmationToken);
         when(oneTimePasswordService.sendTo(eq(phoneNumber), eq(confirmationToken))).thenReturn(Optional.of(""));
 
-        var result = service.setPinCode(request);
+        AuthResponse<SetPinCodeResponse> result = service.setPinCode(request);
 
         Assertions.assertEquals(200, result.getCode());
         Assertions.assertEquals(confirmationToken, result.getBody().getConfirmationToken());
@@ -107,11 +104,11 @@ class AuthServiceShould {
 
     @Test
     void return500_whenSmsSendingFailed() {
-        var request = buildSetPinCodeRequest();
+        SetPinCodeRequest request = buildSetPinCodeRequest();
         when(generatorService.generateToken()).thenReturn(confirmationToken);
         when(oneTimePasswordService.sendTo(eq(phoneNumber), eq(confirmationToken))).thenReturn(Optional.empty());
 
-        var result = service.setPinCode(request);
+        AuthResponse<SetPinCodeResponse> result = service.setPinCode(request);
 
         Assertions.assertEquals(500, result.getCode());
         assertNotNull(result.getBody().getErrorMessage());
@@ -126,12 +123,12 @@ class AuthServiceShould {
      */
     @Test
     void return200_whenSmsCodeIsRight() {
-        var request = buildVerifySmsCodeRequest();
-        var token = new Token();
+        VerifySmsCodeRequest request = buildVerifySmsCodeRequest();
+        Token token = new Token();
         when(oneTimePasswordService.verify(eq(oneTimePassword), eq(confirmationToken))).thenReturn(true);
-        when(tokenRepository.findByConfirmationTokenAndStatus(eq(confirmationToken), eq(TokenStatus.WAITING_FOR_APPROVE))).thenReturn(List.of(token));
+        when(tokenRepository.findByConfirmationTokenAndStatus(eq(confirmationToken), eq(TokenStatus.WAITING_FOR_APPROVE))).thenReturn(Collections.singletonList(token));
 
-        var result = service.verifySmsCode(request);
+        AuthResponse<VerifySmsCodeResponse> result = service.verifySmsCode(request);
 
         Assertions.assertEquals(200, result.getCode());
         assertNull(result.getBody().getErrorMessage());
@@ -140,11 +137,11 @@ class AuthServiceShould {
 
     @Test
     void return403_whenTokenIsMissing() {
-        var request = buildVerifySmsCodeRequest();
+        VerifySmsCodeRequest request = buildVerifySmsCodeRequest();
         when(oneTimePasswordService.verify(eq(oneTimePassword), eq(confirmationToken))).thenReturn(true);
-        when(tokenRepository.findByConfirmationTokenAndStatus(eq(confirmationToken), eq(TokenStatus.WAITING_FOR_APPROVE))).thenReturn(List.of());
+        when(tokenRepository.findByConfirmationTokenAndStatus(eq(confirmationToken), eq(TokenStatus.WAITING_FOR_APPROVE))).thenReturn(Collections.emptyList());
 
-        var result = service.verifySmsCode(request);
+        AuthResponse<VerifySmsCodeResponse> result = service.verifySmsCode(request);
 
         Assertions.assertEquals(403, result.getCode());
         assertNotNull(result.getBody().getErrorMessage());
@@ -153,10 +150,10 @@ class AuthServiceShould {
 
     @Test
     void return403_whenSmsCodeIsWrong() {
-        var request = buildVerifySmsCodeRequest();
+        VerifySmsCodeRequest request = buildVerifySmsCodeRequest();
         when(oneTimePasswordService.verify(eq(oneTimePassword), eq(confirmationToken))).thenReturn(false);
 
-        var result = service.verifySmsCode(request);
+        AuthResponse<VerifySmsCodeResponse> result = service.verifySmsCode(request);
 
         Assertions.assertEquals(403, result.getCode());
         assertNotNull(result.getBody().getErrorMessage());
@@ -165,15 +162,15 @@ class AuthServiceShould {
 
     @Test
     void return200_whenPinCodeIsValid() {
-        var request = new VerifyPinCodeRequest();
+        VerifyPinCodeRequest request = new VerifyPinCodeRequest();
         request.setPhoneNumber(phoneNumber);
         request.setPinCode(pinCode);
 
-        var token = new Token();
+        Token token = new Token();
         token.setConfirmationToken(confirmationToken);
-        when(tokenRepository.findByPhoneNumberAndPinCodeAndStatus(eq(phoneNumber), eq(pinCode), eq(TokenStatus.ACTIVE))).thenReturn(List.of(token));
+        when(tokenRepository.findByPhoneNumberAndPinCodeAndStatus(eq(phoneNumber), eq(pinCode), eq(TokenStatus.ACTIVE))).thenReturn(Collections.singletonList(token));
 
-        var result = service.verifyPinCode(request);
+        AuthResponse<VerifyPinCodeResponse> result = service.verifyPinCode(request);
 
         Assertions.assertEquals(200, result.getCode());
         Assertions.assertEquals(confirmationToken, result.getBody().getConfirmationToken());
@@ -186,9 +183,9 @@ class AuthServiceShould {
         VerifyPinCodeRequest request = new VerifyPinCodeRequest();
         request.setPhoneNumber(phoneNumber);
         request.setPinCode(pinCode);
-        when(tokenRepository.findByPhoneNumberAndPinCodeAndStatus(eq(phoneNumber), eq(pinCode), eq(TokenStatus.ACTIVE))).thenReturn(List.of());
+        when(tokenRepository.findByPhoneNumberAndPinCodeAndStatus(eq(phoneNumber), eq(pinCode), eq(TokenStatus.ACTIVE))).thenReturn(Collections.emptyList());
 
-        var result = service.verifyPinCode(request);
+        AuthResponse<VerifyPinCodeResponse> result = service.verifyPinCode(request);
 
         Assertions.assertEquals(403, result.getCode());
         assertNull(result.getBody().getConfirmationToken());
@@ -196,14 +193,14 @@ class AuthServiceShould {
     }
 
     private VerifySmsCodeRequest buildVerifySmsCodeRequest() {
-        var request = new VerifySmsCodeRequest();
+        VerifySmsCodeRequest request = new VerifySmsCodeRequest();
         request.setSmsCode(oneTimePassword);
         request.setConfirmationToken(confirmationToken);
         return request;
     }
 
     private SetPinCodeRequest buildSetPinCodeRequest() {
-        var request = new SetPinCodeRequest();
+        SetPinCodeRequest request = new SetPinCodeRequest();
         request.setPhoneNumber(phoneNumber);
         request.setPinCode(pinCode);
         return request;

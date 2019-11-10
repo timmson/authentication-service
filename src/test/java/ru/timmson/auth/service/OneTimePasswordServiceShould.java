@@ -10,6 +10,7 @@ import ru.timmson.domain.OneTimePassword;
 import ru.timmson.message.sms.domain.SmsDTO;
 import ru.timmson.message.sms.service.SmsService;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -61,7 +62,7 @@ class OneTimePasswordServiceShould {
 
     @Test
     void returnTrue_whenOTPAndConfirmationTokenIsNotValid() {
-        when(oneTimePasswordRepository.findByPasswordAndConfirmationToken(eq(otp), eq(confirmationToken))).thenReturn(List.of());
+        when(oneTimePasswordRepository.findByPasswordAndConfirmationToken(eq(otp), eq(confirmationToken))).thenReturn(Collections.emptyList());
 
         boolean result = oneTimePasswordService.verify(otp, confirmationToken);
 
@@ -69,9 +70,9 @@ class OneTimePasswordServiceShould {
     }
 
     private List<OneTimePassword> buildOneTimePasswords() {
-        var oneTimePasswordEntity = new OneTimePassword();
+        OneTimePassword oneTimePasswordEntity = new OneTimePassword();
         oneTimePasswordEntity.setConfirmationToken(confirmationToken);
         oneTimePasswordEntity.setPassword(otp);
-        return List.of(oneTimePasswordEntity);
+        return Collections.singletonList(oneTimePasswordEntity);
     }
 }

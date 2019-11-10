@@ -2,8 +2,6 @@ package ru.timmson.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,13 +11,15 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.timmson.auth.domain.*;
 import ru.timmson.auth.service.AuthService;
 
-@Slf4j
 @RestController
 @RequestMapping("/v1/auth/")
-@AllArgsConstructor
 public class AuthController {
 
     private AuthService authService;
+
+    public AuthController(AuthService authService) {
+        this.authService = authService;
+    }
 
     @Operation(summary = "Запрос на отправку номера телефона")
     @ApiResponse(responseCode = "200", description = "Success")

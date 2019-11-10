@@ -1,10 +1,8 @@
 package ru.timmson;
 
-import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-@Data
 @Service
 public class Env {
 
@@ -19,4 +17,35 @@ public class Env {
     @Value("${twilio.from}")
     private String twilioFrom;
 
+    public Integer getOtpAliveSeconds() {
+        return otpAliveSeconds;
+    }
+
+    public Integer getTokenALiveDays() {
+        return tokenALiveDays;
+    }
+
+    public String getTwilioAuthSid() {
+        return twilioAuthSid;
+    }
+
+    public void setTwilioAuthSid(String twilioAuthSid) {
+        this.twilioAuthSid = twilioAuthSid;
+    }
+
+    public String getTwilioAuthToken() {
+        return twilioAuthToken;
+    }
+
+    public void setTwilioAuthToken(String twilioAuthToken) {
+        this.twilioAuthToken = twilioAuthToken;
+    }
+
+    public String getTwilioFrom() {
+        return twilioFrom;
+    }
+
+    public void setTwilioFrom(String twilioFrom) {
+        this.twilioFrom = twilioFrom;
+    }
 }

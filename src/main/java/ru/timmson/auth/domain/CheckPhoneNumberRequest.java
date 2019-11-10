@@ -1,10 +1,15 @@
 package ru.timmson.auth.domain;
 
-import lombok.Data;
-
-@Data
 public class CheckPhoneNumberRequest implements AuthServiceRequest {
 
     private String phoneNumber;
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
 
 }

@@ -9,15 +9,14 @@ plugins {
 group "ru.timmson"
 version "1.0"
 
-sourceCompatibility = 11
-targetCompatibility = 11
+sourceCompatibility = 8
+targetCompatibility = 8
 
 // Versioning of dependencies
 wrapper.gradleVersion = "5.5.1"
 def springBootVersion = "2.2.0.RELEASE"
 def junitVersion = "5.5.0"
 def mockitoVersion = "2.23.0"
-def lombokVersion = "1.18.10"
 
 repositories {
     mavenCentral()
@@ -32,9 +31,6 @@ dependencies {
     runtime "com.h2database:h2:1.4.200"
 
     implementation "org.springdoc:springdoc-openapi-ui:1.2.0"
-
-    implementation "org.projectlombok:lombok:${lombokVersion}"
-    annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
 
     implementation "com.twilio.sdk:twilio:7.44.0"
 

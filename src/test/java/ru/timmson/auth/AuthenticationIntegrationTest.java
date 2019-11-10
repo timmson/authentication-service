@@ -14,6 +14,8 @@ import org.springframework.test.web.servlet.ResultActions;
 import ru.timmson.auth.service.GeneratorService;
 import ru.timmson.dao.OneTimePasswordRepository;
 import ru.timmson.dao.TokenRepository;
+import ru.timmson.domain.OneTimePassword;
+import ru.timmson.domain.Token;
 import ru.timmson.message.sms.domain.SmsDTO;
 import ru.timmson.message.sms.service.SmsService;
 
@@ -58,10 +60,10 @@ class AuthenticationIntegrationTest {
 
     @Test
     void userSetsPinCode() throws Exception {
-        final var phoneNumber = "+79991234567";
-        final var pinCode = "1111";
-        final var smsCode = "123456";
-        final var confirmationToken = "2222-3333";
+        String phoneNumber = "+79991234567";
+        String pinCode = "1111";
+        String smsCode = "123456";
+        String confirmationToken = "2222-3333";
 
         //Check phone
         performPostRequest(
@@ -83,7 +85,7 @@ class AuthenticationIntegrationTest {
         );
 
         //Verify SmsCode in DB
-        var oneTimePassword = oneTimePasswordRepository.findAll().iterator().next();
+        OneTimePassword oneTimePassword = oneTimePasswordRepository.findAll().iterator().next();
         assertNotNull(oneTimePassword.getMsgId());
         assertTrue(LocalDateTime.now().isAfter(oneTimePassword.getCreatedDateTime()));
 
@@ -110,7 +112,7 @@ class AuthenticationIntegrationTest {
                 200, "{\"confirmationToken\": \"" + confirmationToken + "\"}");
 
         //Verify token in DB
-        var token = tokenRepository.findAll().iterator().next();
+        Token token = tokenRepository.findAll().iterator().next();
         assertTrue(LocalDateTime.now().isAfter(token.getCreatedDateTime()));
 
         //Check phone

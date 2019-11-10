@@ -1,6 +1,5 @@
 package ru.timmson.auth.service;
 
-import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.timmson.auth.domain.*;
 import ru.timmson.dao.TokenRepository;
@@ -9,12 +8,12 @@ import ru.timmson.domain.TokenStatus;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static ru.timmson.domain.TokenStatus.EXPIRED;
 
 @Service
-@AllArgsConstructor
 public class AuthServiceImpl implements AuthService {
 
     private GeneratorService generatorService;
@@ -23,16 +22,22 @@ public class AuthServiceImpl implements AuthService {
 
     private OneTimePasswordService oneTimePasswordService;
 
+    public AuthServiceImpl(GeneratorService generatorService, TokenRepository tokenRepository, OneTimePasswordService oneTimePasswordService) {
+        this.generatorService = generatorService;
+        this.tokenRepository = tokenRepository;
+        this.oneTimePasswordService = oneTimePasswordService;
+    }
+
     @Override
     public AuthResponse<CheckPhoneNumberResponse> checkPhoneNumber(CheckPhoneNumberRequest request) {
-        final var tokens = tokenRepository.findByPhoneNumber(request.getPhoneNumber()).stream().filter(t -> !t.getStatus().equals(EXPIRED)).collect(Collectors.toList());
-        final var response = new AuthResponse<>(new CheckPhoneNumberResponse());
+        List<Token> tokens = tokenRepository.findByPhoneNumber(request.getPhoneNumber()).stream().filter(t -> !t.getStatus().equals(EXPIRED)).collect(Collectors.toList());
+        AuthResponse<CheckPhoneNumberResponse> response = new AuthResponse<>(new CheckPhoneNumberResponse());
 
         response.setCode(200);
         response.getBody().setAvailable(false);
 
         if (tokens.size() == 1) {
-            final var status = tokens.get(0).getStatus();
+            String status = tokens.get(0).getStatus();
             response.getBody().setStatus(status);
 
             if (status.equals(TokenStatus.ACTIVE)) {
@@ -49,12 +54,12 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public AuthResponse<SetPinCodeResponse> setPinCode(SetPinCodeRequest request) {
-        final var phoneNumber = request.getPhoneNumber();
+        String phoneNumber = request.getPhoneNumber();
 
-        final var response = new AuthResponse<>(new SetPinCodeResponse());
+        AuthResponse<SetPinCodeResponse> response = new AuthResponse<>(new SetPinCodeResponse());
 
-        var confirmationToken = generatorService.generateToken();
-        var msgId = oneTimePasswordService.sendTo(phoneNumber, confirmationToken);
+        String confirmationToken = generatorService.generateToken();
+        Optional<String> msgId = oneTimePasswordService.sendTo(phoneNumber, confirmationToken);
         if (msgId.isPresent()) {
             saveToken(request, confirmationToken);
             response.setCode(200);
@@ -69,15 +74,15 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public AuthResponse<VerifySmsCodeResponse> verifySmsCode(VerifySmsCodeRequest request) {
-        final var isValid = oneTimePasswordService.verify(request.getSmsCode(), request.getConfirmationToken());
+        boolean isValid = oneTimePasswordService.verify(request.getSmsCode(), request.getConfirmationToken());
 
-        final var response = new AuthResponse<>(new VerifySmsCodeResponse());
+        AuthResponse<VerifySmsCodeResponse> response = new AuthResponse<>(new VerifySmsCodeResponse());
 
         if (isValid) {
             List<Token> tokens = tokenRepository.findByConfirmationTokenAndStatus(request.getConfirmationToken(), TokenStatus.WAITING_FOR_APPROVE);
             if (tokens.size() == 1) {
                 response.setCode(200);
-                var token = tokens.get(0);
+                Token token = tokens.get(0);
                 token.setStatus(TokenStatus.ACTIVE);
                 tokenRepository.save(token);
             } else {
@@ -94,9 +99,9 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public AuthResponse<VerifyPinCodeResponse> verifyPinCode(VerifyPinCodeRequest request) {
-        final var tokens = tokenRepository.findByPhoneNumberAndPinCodeAndStatus(request.getPhoneNumber(), request.getPinCode(), TokenStatus.ACTIVE);
+        List<Token> tokens = tokenRepository.findByPhoneNumberAndPinCodeAndStatus(request.getPhoneNumber(), request.getPinCode(), TokenStatus.ACTIVE);
 
-        final var response = new AuthResponse<>(new VerifyPinCodeResponse());
+        AuthResponse<VerifyPinCodeResponse> response = new AuthResponse<>(new VerifyPinCodeResponse());
 
         if (tokens.size() == 1) {
             response.setCode(200);
@@ -110,11 +115,11 @@ public class AuthServiceImpl implements AuthService {
     }
 
     private void saveToken(SetPinCodeRequest request, String confirmationToken) {
-        final var tokens = tokenRepository.findByPhoneNumber(request.getPhoneNumber());
+        List<Token> tokens = tokenRepository.findByPhoneNumber(request.getPhoneNumber());
         tokens.forEach(t -> t.setStatus(EXPIRED));
         tokenRepository.saveAll(tokens);
 
-        final var token = new Token();
+        Token token = new Token();
         token.setPhoneNumber(request.getPhoneNumber());
         token.setPinCode(request.getPinCode());
         token.setConfirmationToken(confirmationToken);
