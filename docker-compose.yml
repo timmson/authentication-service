@@ -1,0 +1,15 @@
+# Docker Compose file Reference (https://docs.docker.com/compose/compose-file/)
+
+version: '3.7'
+
+services:
+  authentication-service:
+    image: authentication-service
+    container_name: authentication-service
+    build:
+      context: .
+      args:
+        jarFile: "build/libs/authentication-service-1.0.jar"
+    ports:
+      - "8080:8080"
+    restart: always
