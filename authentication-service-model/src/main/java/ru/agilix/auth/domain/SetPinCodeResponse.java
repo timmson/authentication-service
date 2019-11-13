@@ -1,8 +1,5 @@
 package ru.agilix.auth.domain;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class SetPinCodeResponse implements AuthServiceResponse {
 
     private String errorMessage;

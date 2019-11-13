@@ -1,9 +1,10 @@
 plugins {
-    id "java"
     id "com.gradle.build-scan" version "2.0.2"
 }
 
 subprojects {
+    apply plugin: "java"
+
     wrapper.gradleVersion = "5.5.1"
 
     group "ru.agilix"
@@ -11,6 +12,7 @@ subprojects {
 
     ext {
         // Versioning of dependencies
+        springVersion = "5.2.0.RELEASE"
         springBootVersion = "2.2.0.RELEASE"
         junitVersion = "5.5.0"
         mockitoVersion = "2.23.0"
