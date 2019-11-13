@@ -1,48 +1,26 @@
 plugins {
     id "java"
     id "com.gradle.build-scan" version "2.0.2"
-    id "org.springframework.boot" version "2.2.0.RELEASE"
-    id "io.spring.dependency-management" version "1.0.7.RELEASE"
 }
 
+subprojects {
+    wrapper.gradleVersion = "5.5.1"
 
-group "ru.agilix"
-version "1.0"
+    group "ru.agilix"
+    version "1.0"
 
-sourceCompatibility = 8
-targetCompatibility = 8
-
-// Versioning of dependencies
-wrapper.gradleVersion = "5.5.1"
-def springBootVersion = "2.2.0.RELEASE"
-def junitVersion = "5.5.0"
-def mockitoVersion = "2.23.0"
-
-repositories {
-    mavenCentral()
-}
-
-dependencies {
-    implementation "org.springframework.boot:spring-boot-dependencies:${springBootVersion}"
-    implementation "org.springframework.boot:spring-boot-starter-actuator:${springBootVersion}"
-    implementation "org.springframework.boot:spring-boot-starter-web:${springBootVersion}"
-    implementation "org.springframework.boot:spring-boot-starter-data-jpa:${springBootVersion}"
-
-    runtime "com.h2database:h2:1.4.200"
-
-    implementation "org.springdoc:springdoc-openapi-ui:1.2.0"
-
-    implementation "com.twilio.sdk:twilio:7.44.0"
-
-    testImplementation "org.springframework.boot:spring-boot-starter-test:${springBootVersion}"
-    testImplementation "org.junit.jupiter:junit-jupiter-api:${junitVersion}"
-
-    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${junitVersion}"
-    testCompile "org.mockito:mockito-core:${mockitoVersion}"
-    testCompile "org.mockito:mockito-junit-jupiter:${mockitoVersion}"
+    ext {
+        // Versioning of dependencies
+        springBootVersion = "2.2.0.RELEASE"
+        junitVersion = "5.5.0"
+        mockitoVersion = "2.23.0"
+    }
 
 }
 
-test {
-    useJUnitPlatform()
+allprojects {
+
+    repositories {
+        mavenCentral()
+    }
 }

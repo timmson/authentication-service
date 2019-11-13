@@ -7,7 +7,7 @@ services:
     image: authentication-service
     container_name: authentication-service
     build:
-      context: .
+      context: ..
       args:
         jarFile: "build/libs/authentication-service-1.0.jar"
     ports:

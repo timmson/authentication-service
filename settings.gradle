@@ -1,1 +1,4 @@
 rootProject.name = 'authentication-service'
+
+include 'authentication-service-core'
+include 'authentication-service-test'
