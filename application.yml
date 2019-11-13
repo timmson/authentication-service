@@ -1,0 +1,10 @@
+auth:
+  otp:
+    aliveSeconds: 60
+  token:
+    aliveDays: 14
+twilio:
+  from: "ru.agilix"
+  auth:
+    sid: "test"
+    token: "test"
