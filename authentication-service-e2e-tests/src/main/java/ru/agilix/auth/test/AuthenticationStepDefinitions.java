@@ -4,6 +4,7 @@ import io.cucumber.java.ru.Дано;
 import io.cucumber.java.ru.Когда;
 import io.cucumber.java.ru.Тогда;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import ru.agilix.auth.domain.CheckPhoneNumberRequest;
 import ru.agilix.auth.domain.CheckPhoneNumberResponse;
@@ -48,8 +49,12 @@ public class AuthenticationStepDefinitions {
         request.setPhoneNumber(phoneNumber);
         request.setPinCode(pinCode);
 
-        ResponseEntity<SetPinCodeResponse> response = restTemplate.postForEntity(url + "/v1/auth/setPinCode", request, SetPinCodeResponse.class);
-        isResponseOk = response.getStatusCode().is2xxSuccessful();
+        try {
+            ResponseEntity<SetPinCodeResponse> response = restTemplate.postForEntity(url + "/v1/auth/setPinCode", request, SetPinCodeResponse.class);
+            isResponseOk = response.getStatusCode().is2xxSuccessful();
+        } catch (RestClientException e) {
+            //isResponseOk = true;
+        }
     }
 
     @Тогда("Установка {string} проходит успешно")
