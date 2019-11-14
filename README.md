@@ -2,6 +2,13 @@
 
 Kata for training
 
+## Branches
+- **v1-manual-e2e** - Manual E2E
+- **v2-bad-cucumber**  - Automated E2E, IT language
+- **v3-good-cucumber**  - Automated E2E, user language
+- **v4-component-n-adapter**  - +Component tests with Adapter
+- **master** - +Unit tests
+
 ## 1. Gradle clean & build
 ### Windows
 ```
