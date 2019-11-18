@@ -3,10 +3,14 @@
 Kata for training
 
 ## Branches
+### SUT - docker component
 - **v1-manual-e2e** - Manual E2E
-- **v2-bad-cucumber**  - Automated E2E, IT language
-- **v3-good-cucumber**  - Automated E2E, user language
-- **v4-component-n-adapter**  - +Component tests with Adapter
+- **v2-manual-n-adapter**  - Manual E2E + Wiremock
+- **v3-bad-cucumber**  - Automated E2E (component), IT language + Adapter  + Wiremock
+- **v4-good-cucumber**  - Automated E2E (component), user language  + Wiremock
+
+### SUT - java classes
+- **v5-integration**  - Integration
 - **master** - +Unit tests
 
 ## 1. Gradle clean & build
@@ -21,18 +25,6 @@ gradlew.bat clean build
 ``` 
 
 ## 2. Run application
-### a. Local SpringBoot jar
-#### Windows
-```
-gradlew.bat -p authentication-service-core bootRun
-```
-
-#### MacOS / Linux
-```
-./gradlew -p authentication-service-core bootRun
-``` 
-
-### b. Docker
 ```
 docker-compose up -d --build
 ```
