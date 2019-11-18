@@ -30,6 +30,7 @@ public class SmsController {
 
     @PostMapping("send")
     public ResponseEntity<String> sendSMS(@RequestBody SmsSendRequest requestBody) {
+        System.out.println(requestBody.getNumber() + " " + requestBody.getBody());
         Message message = Message.creator(
                 new PhoneNumber(requestBody.getNumber()),
                 new PhoneNumber(twilioFrom),
