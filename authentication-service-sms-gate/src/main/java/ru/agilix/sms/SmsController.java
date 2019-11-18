@@ -16,11 +16,11 @@ import javax.annotation.PostConstruct;
 @RequestMapping("/v1/sms/")
 public class SmsController {
 
-    @Value("${twilio.auth.sid}")
+    @Value("${TWILIO_AUTH_SID}")
     private String twilioAuthSid;
-    @Value("${twilio.auth.token}")
+    @Value("${TWILIO_AUTH_TOKEN}")
     private String twilioAuthToken;
-    @Value("${twilio.from}")
+    @Value("${TWILIO_FROM}")
     private String twilioFrom;
 
     @PostConstruct
