@@ -1,0 +1,32 @@
+plugins {
+    id "org.springframework.boot" version "2.2.0.RELEASE"
+    id "io.spring.dependency-management" version "1.0.7.RELEASE"
+}
+
+sourceCompatibility = 8
+targetCompatibility = 8
+
+dependencies {
+    implementation project(":authentication-service-model")
+
+    implementation "org.springframework.boot:spring-boot-dependencies:${springBootVersion}"
+    implementation "org.springframework.boot:spring-boot-starter-actuator:${springBootVersion}"
+    implementation "org.springframework.boot:spring-boot-starter-web:${springBootVersion}"
+    implementation "org.springframework.boot:spring-boot-starter-data-jpa:${springBootVersion}"
+
+    runtime "com.h2database:h2:1.4.200"
+
+    implementation "org.springdoc:springdoc-openapi-ui:1.2.0"
+
+    testImplementation "org.springframework.boot:spring-boot-starter-test:${springBootVersion}"
+    testImplementation "org.junit.jupiter:junit-jupiter-api:${junitVersion}"
+
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${junitVersion}"
+    testCompile "org.mockito:mockito-core:${mockitoVersion}"
+    testCompile "org.mockito:mockito-junit-jupiter:${mockitoVersion}"
+
+}
+
+test {
+    useJUnitPlatform()
+}

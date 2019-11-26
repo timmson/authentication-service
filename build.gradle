@@ -1,48 +1,43 @@
 plugins {
-    id "java"
     id "com.gradle.build-scan" version "2.0.2"
-    id "org.springframework.boot" version "2.2.0.RELEASE"
-    id "io.spring.dependency-management" version "1.0.7.RELEASE"
+    id "com.avast.gradle.docker-compose" version "0.10.3"
 }
 
+subprojects {
+    apply plugin: "java"
+    apply plugin: "jacoco"
 
-group "ru.timmson"
-version "1.0"
+    wrapper.gradleVersion = "5.5.1"
 
-sourceCompatibility = 8
-targetCompatibility = 8
+    group "ru.agilix"
+    version "1.0"
 
-// Versioning of dependencies
-wrapper.gradleVersion = "5.5.1"
-def springBootVersion = "2.2.0.RELEASE"
-def junitVersion = "5.5.0"
-def mockitoVersion = "2.23.0"
+    ext {
+        // Versioning of dependencies
+        springVersion = "5.2.0.RELEASE"
+        springBootVersion = "2.2.0.RELEASE"
+        junitVersion = "5.5.0"
+        mockitoVersion = "2.23.0"
+    }
 
-repositories {
-    mavenCentral()
-}
+    jacocoTestReport {
+        reports {
+            xml.enabled false
+            csv.enabled false
+            html.enabled true
+        }
+    }
 
-dependencies {
-    implementation "org.springframework.boot:spring-boot-dependencies:${springBootVersion}"
-    implementation "org.springframework.boot:spring-boot-starter-actuator:${springBootVersion}"
-    implementation "org.springframework.boot:spring-boot-starter-web:${springBootVersion}"
-    implementation "org.springframework.boot:spring-boot-starter-data-jpa:${springBootVersion}"
-
-    runtime "com.h2database:h2:1.4.200"
-
-    implementation "org.springdoc:springdoc-openapi-ui:1.2.0"
-
-    implementation "com.twilio.sdk:twilio:7.44.0"
-
-    testImplementation "org.springframework.boot:spring-boot-starter-test:${springBootVersion}"
-    testImplementation "org.junit.jupiter:junit-jupiter-api:${junitVersion}"
-
-    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${junitVersion}"
-    testCompile "org.mockito:mockito-core:${mockitoVersion}"
-    testCompile "org.mockito:mockito-junit-jupiter:${mockitoVersion}"
+    dockerCompose {
+        useComposeFiles = ["docker-compose.component.yml"]
+    }
 
 }
 
-test {
-    useJUnitPlatform()
+allprojects {
+
+    repositories {
+        mavenCentral()
+    }
+
 }
